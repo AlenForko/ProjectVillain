@@ -1,5 +1,8 @@
 #include "CharacterBase.h"
+
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 
 ACharacterBase::ACharacterBase()
@@ -11,6 +14,14 @@ ACharacterBase::ACharacterBase()
 	
 	Movement->NavAgentProps.bCanCrouch = true;
 	bUseControllerRotationYaw = false;
+	
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
+	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->bUsePawnControlRotation = true;
+	
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetupAttachment(SpringArmComponent);
+	
 }
 
 void ACharacterBase::BeginPlay()

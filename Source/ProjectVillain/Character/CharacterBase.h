@@ -4,6 +4,9 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class PROJECTVILLAIN_API ACharacterBase : public ACharacter
 {
@@ -40,7 +43,13 @@ protected:
 	void OnRep_IsCrouchingCustom();
 
 	void ApplyMovementSpeed();
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	TObjectPtr<UCameraComponent> CameraComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
+	
 public:
 	// Input handlers
 	UFUNCTION(BlueprintCallable, Category="Movement")

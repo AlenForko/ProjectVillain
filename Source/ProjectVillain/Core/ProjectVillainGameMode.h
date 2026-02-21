@@ -19,6 +19,7 @@ class PROJECTVILLAIN_API AProjectVillainGameMode : public AGameModeBase
 	virtual void PostLogin(APlayerController* NewPlayerController) override;
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 	
+	virtual void BeginPlay() override;
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APawn> SurvivorPawnClass;

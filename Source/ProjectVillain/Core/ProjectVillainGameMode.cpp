@@ -2,11 +2,24 @@
 
 
 #include "ProjectVillainGameMode.h"
+
+#include "ProjectVillainGameState.h"
 #include "ProjectVillainPlayerState.h"
 
 AProjectVillainGameMode::AProjectVillainGameMode()
 {
 	DefaultPawnClass = AProjectVillainPlayerState::StaticClass();
+	GameStateClass   = AProjectVillainGameState::StaticClass();
+}
+
+void AProjectVillainGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (AProjectVillainGameState* PVGameState = GetGameState<AProjectVillainGameState>())
+	{
+		PVGameState->StartMatchTimer();
+	}
 }
 
 void AProjectVillainGameMode::PostLogin(APlayerController* NewPlayerController)
@@ -48,3 +61,4 @@ APawn* AProjectVillainGameMode::SpawnDefaultPawnFor_Implementation(AController* 
 		StartSpot->GetActorRotation()
 	);
 }
+
