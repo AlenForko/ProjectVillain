@@ -4,9 +4,6 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
-class USpringArmComponent;
-class UCameraComponent;
-
 UCLASS()
 class PROJECTVILLAIN_API ACharacterBase : public ACharacter
 {
@@ -18,8 +15,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	// Movement settings
 	UPROPERTY(EditDefaultsOnly, Category="Movement")
 	float WalkSpeed = 450.f;
 
@@ -29,7 +24,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Movement")
 	float CrouchSpeed = 250.f;
 
-	// Replicated movement state
 	UPROPERTY(ReplicatedUsing=OnRep_IsSprinting, BlueprintReadOnly, Category="Movement")
 	bool bIsSprinting = false;
 
@@ -43,29 +37,25 @@ protected:
 	void OnRep_IsCrouchingCustom();
 
 	void ApplyMovementSpeed();
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TObjectPtr<UCameraComponent> CameraComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TObjectPtr<USpringArmComponent> SpringArmComponent;
-	
-public:
-	// Input handlers
-	UFUNCTION(BlueprintCallable, Category="Movement")
-	void StartSprint();
-
-	UFUNCTION(BlueprintCallable, Category="Movement")
-	void StopSprint();
-
-	UFUNCTION(BlueprintCallable, Category="Movement")
-	void ToggleCrouch();
-
-protected:
-	// Server RPCs
 	UFUNCTION(Server, Reliable)
 	void ServerSetSprinting(bool bNewSprinting);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetCrouching(bool bNewCrouching);
+
+public:
+	void HandleMoveInput(const FVector2D& MoveAxis);
+	void HandleLookInput(const FVector2D& LookAxis);
+
+	void HandleJumpPressed();
+	void HandleJumpReleased();
+
+	void StartSprint();
+	void StopSprint();
+	void ToggleCrouch();
+	
+
+	bool IsSprinting() const { return bIsSprinting; }
+	bool IsCrouchingCustom() const { return bIsCrouchingCustom; }
 };

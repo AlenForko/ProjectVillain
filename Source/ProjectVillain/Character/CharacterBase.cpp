@@ -1,8 +1,5 @@
 #include "CharacterBase.h"
-
-#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 
 ACharacterBase::ACharacterBase()
@@ -10,18 +7,10 @@ ACharacterBase::ACharacterBase()
 	bReplicates = true;
 	SetReplicateMovement(true);
 
-	UCharacterMovementComponent* Movement = GetCharacterMovement();
-	
-	Movement->NavAgentProps.bCanCrouch = true;
+	// Network movement setup
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
-	
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
-	SpringArmComponent->SetupAttachment(RootComponent);
-	SpringArmComponent->bUsePawnControlRotation = true;
-	
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-	CameraComponent->SetupAttachment(SpringArmComponent);
-	
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 }
 
 void ACharacterBase::BeginPlay()
@@ -33,36 +22,70 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
 	DOREPLIFETIME(ACharacterBase, bIsSprinting);
 	DOREPLIFETIME(ACharacterBase, bIsCrouchingCustom);
 }
 
 void ACharacterBase::ApplyMovementSpeed()
 {
-	if (auto* Movement = GetCharacterMovement())
-	{
-		Movement->MaxWalkSpeed = bIsCrouchingCustom ? CrouchSpeed : (bIsSprinting ? SprintSpeed : WalkSpeed);
-	}
+	if (!GetCharacterMovement()) return;
+
+	float TargetSpeed = bIsCrouchingCustom ? CrouchSpeed : (bIsSprinting ? SprintSpeed : WalkSpeed);
+	GetCharacterMovement()->MaxWalkSpeed = TargetSpeed;
 }
 
 void ACharacterBase::OnRep_IsSprinting()
 {
 	ApplyMovementSpeed();
 }
+
 void ACharacterBase::OnRep_IsCrouchingCustom()
 {
 	ApplyMovementSpeed();
 }
 
+void ACharacterBase::HandleMoveInput(const FVector2D& MoveAxis)
+{
+	if (!Controller) return;
+
+	const FRotator YawRot(0.f, Controller->GetControlRotation().Yaw, 0.f);
+	const FVector Forward = FRotationMatrix(YawRot).GetUnitAxis(EAxis::X);
+	const FVector Right = FRotationMatrix(YawRot).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(Forward, MoveAxis.Y);
+	AddMovementInput(Right, MoveAxis.X);
+}
+
+void ACharacterBase::HandleLookInput(const FVector2D& LookAxis)
+{
+	AddControllerYawInput(LookAxis.X);
+	AddControllerPitchInput(LookAxis.Y);
+}
+
+void ACharacterBase::HandleJumpPressed()
+{
+	Jump();
+}
+
+void ACharacterBase::HandleJumpReleased()
+{
+	StopJumping();
+}
+
 void ACharacterBase::StartSprint()
 {
-	if (!bIsSprinting) ServerSetSprinting(true);
+	if (!bIsSprinting)
+	{
+		ServerSetSprinting(true);
+	}
 }
 
 void ACharacterBase::StopSprint()
 {
-	if (bIsSprinting) ServerSetSprinting(false);
+	if (bIsSprinting)
+	{
+		ServerSetSprinting(false);
+	}
 }
 
 void ACharacterBase::ToggleCrouch()
@@ -72,7 +95,11 @@ void ACharacterBase::ToggleCrouch()
 
 void ACharacterBase::ServerSetSprinting_Implementation(bool bNewSprinting)
 {
-	if (bIsCrouchingCustom && bNewSprinting) bNewSprinting = false;
+	if (bIsCrouchingCustom && bNewSprinting)
+	{
+		bNewSprinting = false;
+	}
+
 	bIsSprinting = bNewSprinting;
 	ApplyMovementSpeed();
 }
@@ -80,7 +107,16 @@ void ACharacterBase::ServerSetSprinting_Implementation(bool bNewSprinting)
 void ACharacterBase::ServerSetCrouching_Implementation(bool bNewCrouching)
 {
 	bIsCrouchingCustom = bNewCrouching;
-	bIsCrouchingCustom ? Crouch() : UnCrouch();
-	if (bIsCrouchingCustom) bIsSprinting = false;
+
+	if (bIsCrouchingCustom)
+	{
+		Crouch();
+		bIsSprinting = false;
+	}
+	else
+	{
+		UnCrouch();
+	}
+
 	ApplyMovementSpeed();
 }

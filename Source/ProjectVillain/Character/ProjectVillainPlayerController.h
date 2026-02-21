@@ -5,6 +5,9 @@
 #include "GameFramework/PlayerController.h"
 #include "ProjectVillainPlayerController.generated.h"
 
+struct FInputActionValue;
+class UInputAction;
+class UInputMappingContext;
 class ACharacterBase;
 UCLASS()
 class PROJECTVILLAIN_API AProjectVillainPlayerController : public APlayerController
@@ -12,31 +15,41 @@ class PROJECTVILLAIN_API AProjectVillainPlayerController : public APlayerControl
 	GENERATED_BODY()
 
 protected:
-	virtual void SetupInputComponent() override;
-
-	TObjectPtr<ACharacterBase> BaseCharacter;
-	// Input handlers
-	void Input_Move(const struct FInputActionValue& Value);
-	void Input_Look(const struct FInputActionValue& Value);
-	void Input_JumpPressed(const struct FInputActionValue& Value);
-	void Input_JumpReleased(const struct FInputActionValue& Value);
-	void Input_SprintPressed(const struct FInputActionValue& Value);
-	void Input_SprintReleased(const struct FInputActionValue& Value);
-	void Input_CrouchToggle(const struct FInputActionValue& Value);
-
-	// Input action references
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<class UInputMappingContext> PlayerMappingContext;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<class UInputAction> IA_Move;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<class UInputAction> IA_Look;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<class UInputAction> IA_Jump;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<class UInputAction> IA_Sprint;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<class UInputAction> IA_CrouchToggle;
-
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
+	virtual void OnPossess(APawn* InPawn) override;
+
+	// Enhanced Input Assets (assign in BP defaults)
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputMappingContext> PlayerMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> IA_Move;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> IA_Look;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> IA_Jump;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> IA_Sprint;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> IA_CrouchToggle;
+
+	// Cached pointer to currently possessed base character (optional convenience)
+	UPROPERTY()
+	TObjectPtr<class ACharacterBase> CachedBaseCharacter;
+
+	// Input handlers
+	void Input_Move(const FInputActionValue& Value);
+	void Input_Look(const FInputActionValue& Value);
+	void Input_JumpStarted(const FInputActionValue& Value);
+	void Input_JumpCompleted(const FInputActionValue& Value);
+	void Input_SprintStarted(const FInputActionValue& Value);
+	void Input_SprintCompleted(const FInputActionValue& Value);
+	void Input_CrouchToggle(const FInputActionValue& Value);
+
+	void CachePossessedCharacter();
 };

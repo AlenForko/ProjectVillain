@@ -9,7 +9,7 @@
 
 AProjectVillainGameMode::AProjectVillainGameMode()
 {
-	DefaultPawnClass = AProjectVillainPlayerState::StaticClass();
+	PlayerStateClass = AProjectVillainPlayerState::StaticClass();
 	GameStateClass   = AProjectVillainGameState::StaticClass();
 	PlayerControllerClass = AProjectVillainPlayerController::StaticClass();
 }
