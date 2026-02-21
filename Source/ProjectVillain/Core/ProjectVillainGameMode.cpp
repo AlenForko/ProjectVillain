@@ -5,11 +5,13 @@
 
 #include "ProjectVillainGameState.h"
 #include "ProjectVillainPlayerState.h"
+#include "ProjectVillain/Character/ProjectVillainPlayerController.h"
 
 AProjectVillainGameMode::AProjectVillainGameMode()
 {
 	DefaultPawnClass = AProjectVillainPlayerState::StaticClass();
 	GameStateClass   = AProjectVillainGameState::StaticClass();
+	PlayerControllerClass = AProjectVillainPlayerController::StaticClass();
 }
 
 void AProjectVillainGameMode::BeginPlay()
@@ -61,4 +63,3 @@ APawn* AProjectVillainGameMode::SpawnDefaultPawnFor_Implementation(AController* 
 		StartSpot->GetActorRotation()
 	);
 }
-
