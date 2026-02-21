@@ -22,6 +22,7 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
 	DOREPLIFETIME(ACharacterBase, bIsSprinting);
 	DOREPLIFETIME(ACharacterBase, bIsCrouchingCustom);
 }
