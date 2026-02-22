@@ -9,6 +9,7 @@ struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class ACharacterBase;
+
 UCLASS()
 class PROJECTVILLAIN_API AProjectVillainPlayerController : public APlayerController
 {
@@ -38,9 +39,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> IA_CrouchToggle;
 
-	// Cached pointer to currently possessed base character (optional convenience)
+private:
 	UPROPERTY()
-	TObjectPtr<class ACharacterBase> CachedBaseCharacter;
+	TObjectPtr<ACharacterBase> CachedBaseCharacter;
 
 	// Input handlers
 	void Input_Move(const FInputActionValue& Value);

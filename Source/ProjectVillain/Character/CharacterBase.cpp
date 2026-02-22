@@ -5,7 +5,7 @@
 ACharacterBase::ACharacterBase()
 {
 	bReplicates = true;
-	SetReplicateMovement(true);
+	ACharacter::SetReplicateMovement(true);
 
 	// Network movement setup
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -23,23 +23,18 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACharacterBase, bIsSprinting);
-	DOREPLIFETIME(ACharacterBase, bIsCrouchingCustom);
+	DOREPLIFETIME(ACharacterBase, bIsCrouching);
 }
 
-void ACharacterBase::ApplyMovementSpeed()
+void ACharacterBase::ApplyMovementSpeed() const
 {
 	if (!GetCharacterMovement()) return;
 
-	float TargetSpeed = bIsCrouchingCustom ? CrouchSpeed : (bIsSprinting ? SprintSpeed : WalkSpeed);
+	float TargetSpeed = bIsCrouching ? CrouchSpeed : (bIsSprinting ? SprintSpeed : WalkSpeed);
 	GetCharacterMovement()->MaxWalkSpeed = TargetSpeed;
 }
 
-void ACharacterBase::OnRep_IsSprinting()
-{
-	ApplyMovementSpeed();
-}
-
-void ACharacterBase::OnRep_IsCrouchingCustom()
+void ACharacterBase::OnRep_MovementStateChanged()
 {
 	ApplyMovementSpeed();
 }
@@ -90,12 +85,12 @@ void ACharacterBase::StopSprint()
 
 void ACharacterBase::ToggleCrouch()
 {
-	ServerSetCrouching(!bIsCrouchingCustom);
+	ServerSetCrouching(!bIsCrouching);
 }
 
 void ACharacterBase::ServerSetSprinting_Implementation(bool bNewSprinting)
 {
-	if (bIsCrouchingCustom && bNewSprinting)
+	if (bIsCrouching && bNewSprinting)
 	{
 		bNewSprinting = false;
 	}
@@ -106,9 +101,9 @@ void ACharacterBase::ServerSetSprinting_Implementation(bool bNewSprinting)
 
 void ACharacterBase::ServerSetCrouching_Implementation(bool bNewCrouching)
 {
-	bIsCrouchingCustom = bNewCrouching;
+	bIsCrouching = bNewCrouching;
 
-	if (bIsCrouchingCustom)
+	if (bIsCrouching)
 	{
 		Crouch();
 		bIsSprinting = false;

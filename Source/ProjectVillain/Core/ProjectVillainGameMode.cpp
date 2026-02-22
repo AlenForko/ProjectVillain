@@ -24,38 +24,33 @@ void AProjectVillainGameMode::BeginPlay()
 	}
 }
 
-void AProjectVillainGameMode::PostLogin(APlayerController* NewPlayerController)
+AActor* AProjectVillainGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
-	Super::PostLogin(NewPlayerController);
-	
-	AProjectVillainPlayerState* PlayerState = NewPlayerController->GetPlayerState<AProjectVillainPlayerState>();
-	if (!PlayerState) return;
-	
-	if (!bVillainAssigned)
+	if (AProjectVillainPlayerState* PlayerState = Player->GetPlayerState<AProjectVillainPlayerState>())
 	{
-		PlayerState->SetPlayerRole(EPlayerRole::Villain);
-		bVillainAssigned = true;
-		UE_LOG(LogTemp, Warning, TEXT("Player %s assigned as Villain"), *PlayerState->GetPlayerName());
+		const EPlayerRole AssignedRole = bVillainAssigned ? EPlayerRole::Survivor : EPlayerRole::Villain;
+		
+		PlayerState->SetPlayerRole(AssignedRole);
+		
+		if (AssignedRole == EPlayerRole::Villain)
+		{
+			bVillainAssigned = true;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Player %s assigned as %s (ChoosePlayerStart)"), *PlayerState->GetPlayerName(), AssignedRole == EPlayerRole::Villain ? TEXT("Villain") : TEXT("Survivor"));
 	}
-	else
-	{
-		PlayerState->SetPlayerRole(EPlayerRole::Survivor);
-		UE_LOG(LogTemp, Warning, TEXT("Player %s assigned as Survivor"), *PlayerState->GetPlayerName());
-	}
+	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
 APawn* AProjectVillainGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
-	
-	AProjectVillainPlayerState* PlayerState = NewPlayer->GetPlayerState<AProjectVillainPlayerState>();
-	if (!PlayerState) return nullptr;
-
-	TSubclassOf<APawn> PawnToSpawn = SurvivorPawnClass;
-
-	if (PlayerState->GetPlayerRole() == EPlayerRole::Villain)
+	const AProjectVillainPlayerState* PlayerState = NewPlayer->GetPlayerState<AProjectVillainPlayerState>();
+	if (!PlayerState)
 	{
-		PawnToSpawn = VillainPawnClass;
+		UE_LOG(LogTemp, Warning, TEXT("PlayerState is null for Player %s"), *NewPlayer->GetName());
+		return nullptr;
 	}
+
+	const TSubclassOf<APawn> PawnToSpawn = PlayerState->GetPlayerRole() == EPlayerRole::Villain ? VillainPawnClass : SurvivorPawnClass;
 
 	return GetWorld()->SpawnActor<APawn>(
 		PawnToSpawn,

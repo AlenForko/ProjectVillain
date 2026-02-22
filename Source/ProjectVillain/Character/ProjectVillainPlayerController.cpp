@@ -6,8 +6,7 @@
 void AProjectVillainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Add mapping context for LOCAL player only
+	CachePossessedCharacter();
 	if (IsLocalController())
 	{
 		if (ULocalPlayer* LP = GetLocalPlayer())
@@ -47,75 +46,64 @@ void AProjectVillainPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent);
-	if (!EIC) return;
+	UEnhancedInputComponent* EnhancedInputComp = Cast<UEnhancedInputComponent>(InputComponent);
+	if (!EnhancedInputComp) return;
 
 	if (IA_Move)
-		EIC->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AProjectVillainPlayerController::Input_Move);
+		EnhancedInputComp->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AProjectVillainPlayerController::Input_Move);
 
 	if (IA_Look)
-		EIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AProjectVillainPlayerController::Input_Look);
+		EnhancedInputComp->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AProjectVillainPlayerController::Input_Look);
 
 	if (IA_Jump)
 	{
-		EIC->BindAction(IA_Jump, ETriggerEvent::Started, this, &AProjectVillainPlayerController::Input_JumpStarted);
-		EIC->BindAction(IA_Jump, ETriggerEvent::Completed, this, &AProjectVillainPlayerController::Input_JumpCompleted);
+		EnhancedInputComp->BindAction(IA_Jump, ETriggerEvent::Started, this, &AProjectVillainPlayerController::Input_JumpStarted);
+		EnhancedInputComp->BindAction(IA_Jump, ETriggerEvent::Completed, this, &AProjectVillainPlayerController::Input_JumpCompleted);
 	}
 
 	if (IA_Sprint)
 	{
-		EIC->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AProjectVillainPlayerController::Input_SprintStarted);
-		EIC->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AProjectVillainPlayerController::Input_SprintCompleted);
+		EnhancedInputComp->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AProjectVillainPlayerController::Input_SprintStarted);
+		EnhancedInputComp->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AProjectVillainPlayerController::Input_SprintCompleted);
 	}
 
 	if (IA_CrouchToggle)
-		EIC->BindAction(IA_CrouchToggle, ETriggerEvent::Started, this, &AProjectVillainPlayerController::Input_CrouchToggle);
+		EnhancedInputComp->BindAction(IA_CrouchToggle, ETriggerEvent::Started, this, &AProjectVillainPlayerController::Input_CrouchToggle);
 }
 
 void AProjectVillainPlayerController::Input_Move(const FInputActionValue& Value)
 {
-	if (!CachedBaseCharacter) CachePossessedCharacter();
-	if (!CachedBaseCharacter) return;
-
 	const FVector2D MoveAxis = Value.Get<FVector2D>();
 	CachedBaseCharacter->HandleMoveInput(MoveAxis);
 }
 
 void AProjectVillainPlayerController::Input_Look(const FInputActionValue& Value)
 {
-	if (!CachedBaseCharacter) CachePossessedCharacter();
-	if (!CachedBaseCharacter) return;
-
 	const FVector2D LookAxis = Value.Get<FVector2D>();
 	CachedBaseCharacter->HandleLookInput(LookAxis);
 }
 
 void AProjectVillainPlayerController::Input_JumpStarted(const FInputActionValue& /*Value*/)
 {
-	if (!CachedBaseCharacter) CachePossessedCharacter();
-	if (CachedBaseCharacter) CachedBaseCharacter->HandleJumpPressed();
+	CachedBaseCharacter->HandleJumpPressed();
 }
 
 void AProjectVillainPlayerController::Input_JumpCompleted(const FInputActionValue& /*Value*/)
 {
-	if (!CachedBaseCharacter) CachePossessedCharacter();
-	if (CachedBaseCharacter) CachedBaseCharacter->HandleJumpReleased();
+	CachedBaseCharacter->HandleJumpReleased();
 }
 
 void AProjectVillainPlayerController::Input_SprintStarted(const FInputActionValue& /*Value*/)
 {
-	if (!CachedBaseCharacter) CachePossessedCharacter();
-	if (CachedBaseCharacter) CachedBaseCharacter->StartSprint();
+	CachedBaseCharacter->StartSprint();
 }
 
 void AProjectVillainPlayerController::Input_SprintCompleted(const FInputActionValue& /*Value*/)
 {
-	if (!CachedBaseCharacter) CachePossessedCharacter();
-	if (CachedBaseCharacter) CachedBaseCharacter->StopSprint();
+	CachedBaseCharacter->StopSprint();
 }
 
 void AProjectVillainPlayerController::Input_CrouchToggle(const FInputActionValue& /*Value*/)
 {
-	if (!CachedBaseCharacter) CachePossessedCharacter();
-	if (CachedBaseCharacter) CachedBaseCharacter->ToggleCrouch();
+	CachedBaseCharacter->ToggleCrouch();
 }

@@ -1,12 +1,16 @@
-#include "SurvivorCharacter.h"
+
+#include "VillainCharacter.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 
-ASurvivorCharacter::ASurvivorCharacter()
+AVillainCharacter::AVillainCharacter()
 {
-	WalkSpeed	= 450.f;
+	WalkSpeed	= 550.f;
 	SprintSpeed = 650.f;
 	CrouchSpeed = 250.f;   
 
 	bUseControllerRotationYaw = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
+
+
