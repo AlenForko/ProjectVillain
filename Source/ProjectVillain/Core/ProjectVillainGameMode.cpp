@@ -1,11 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "ProjectVillainGameMode.h"
 
 #include "ProjectVillainGameState.h"
 #include "ProjectVillainPlayerState.h"
 #include "ProjectVillain/Character/ProjectVillainPlayerController.h"
+#include "ProjectVillain/PCG/DungeonGenerator.h"
 
 AProjectVillainGameMode::AProjectVillainGameMode()
 {
@@ -17,7 +15,21 @@ AProjectVillainGameMode::AProjectVillainGameMode()
 void AProjectVillainGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attempting to spawn DungeonGenerator. DungeonGeneratorClass: %s"), *GetNameSafe(DungeonGeneratorClass));
+		ADungeonGenerator* Generator = GetWorld()->SpawnActor<ADungeonGenerator>(DungeonGeneratorClass);
+		if (Generator)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("DungeonGenerator spawned successfully!"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to spawn DungeonGenerator!"));
+		}
+	}
+	
 	if (AProjectVillainGameState* PVGameState = GetGameState<AProjectVillainGameState>())
 	{
 		PVGameState->StartMatchTimer();

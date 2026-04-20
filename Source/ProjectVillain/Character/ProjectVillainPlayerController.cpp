@@ -31,6 +31,8 @@ void AProjectVillainPlayerController::OnPossess(APawn* InPawn)
 
 void AProjectVillainPlayerController::CachePossessedCharacter()
 {
+	
+	// TODO: FIX THIS SHIT........... CachedBaseCharacter doesn't get cached on s tart, so the input doesn't work.
 	CachedBaseCharacter = Cast<ACharacterBase>(GetPawn());
 	if (CachedBaseCharacter)
 	{
@@ -105,5 +107,6 @@ void AProjectVillainPlayerController::Input_SprintCompleted(const FInputActionVa
 
 void AProjectVillainPlayerController::Input_CrouchToggle(const FInputActionValue& /*Value*/)
 {
+
 	CachedBaseCharacter->ToggleCrouch();
 }

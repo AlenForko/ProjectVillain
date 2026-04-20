@@ -5,6 +5,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ProjectVillainPlayerController.generated.h"
 
+class AProjectVillainHUD;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
@@ -20,7 +21,7 @@ protected:
 	virtual void SetupInputComponent() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
-	// Enhanced Input Assets (assign in BP defaults)
+
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 
@@ -38,6 +39,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> IA_CrouchToggle;
+	
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<AProjectVillainHUD> MainHUD;
 
 private:
 	UPROPERTY()
