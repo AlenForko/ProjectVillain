@@ -11,8 +11,11 @@ ARoom::ARoom()
 	Root = CreateDefaultSubobject<USceneComponent>("Root");
 	SetRootComponent(Root);
 	
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+	Mesh->SetupAttachment(Root);
+	
 	Collision = CreateDefaultSubobject<UBoxComponent>("Collision");
-	Collision->SetupAttachment(Root);
+	Collision->SetupAttachment(Mesh);
 }
 
 void ARoom::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -34,5 +37,6 @@ bool ARoom::IsRoomColliding() const
 {
 	TArray<AActor*> OverlappingActors;
 	Collision->GetOverlappingActors(OverlappingActors);
+	OverlappingActors.Remove(const_cast<ARoom*>(this));
 	return OverlappingActors.Num() > 0;
 }

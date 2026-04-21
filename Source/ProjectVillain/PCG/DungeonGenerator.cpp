@@ -1,6 +1,7 @@
 #include "DungeonGenerator.h"
 
 #include "DungeonGeneratorConfig.h"
+#include "Components/ArrowComponent.h"
 #include "ProjectVillain/Dungeon/Room.h"
 
 ADungeonGenerator::ADungeonGenerator()
@@ -21,7 +22,11 @@ void ADungeonGenerator::BeginPlay()
 
 void ADungeonGenerator::Server_SpawnDungeon_Implementation()
 {
-	AActor* MainRoom = GetWorld()->SpawnActor(Config->MainRoomClass.LoadSynchronous(), &FTransform::Identity);
+	ARoom* MainRoom = Cast<ARoom>(GetWorld()->SpawnActor(Config->MainRoomClass.LoadSynchronous(), &FTransform::Identity));
+	for (UArrowComponent* Arrow : MainRoom->GetAllSocketArrows_ServerOnly())
+	{
+		AvailableSpawnPoints.Add(Arrow);
+	}
 	if (MainRoom == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn main room"));
@@ -30,18 +35,11 @@ void ADungeonGenerator::Server_SpawnDungeon_Implementation()
 	else
 	{
 		Config->Seed = FMath::Rand();
-		int AmountOfRoomsToSpawn = FMath::RandRange(Config->MinRooms, Config->MaxRooms);
+		AmountOfRoomsToSpawn = FMath::RandRange(Config->MinRooms, Config->MaxRooms);
 		
-		for (int i = 0; i < AmountOfRoomsToSpawn; i++)
+		for (RoomsSpawned = 0; RoomsSpawned <= AmountOfRoomsToSpawn; RoomsSpawned++)
 		{
-			AActor* RoomSpawned = GetWorld()->SpawnActor(ARoom::StaticClass(), &FTransform::Identity);
-			if (RoomSpawned == nullptr)
-			{
-				UE_LOG(LogTemp, Error, TEXT("Failed to spawn room"));
-				return;
-			}
-			
-			SpawnedRooms.Add(Cast<ARoom>(RoomSpawned));
+			SelectNextRoom();
 		}
 	}
 	
@@ -50,33 +48,74 @@ void ADungeonGenerator::Server_SpawnDungeon_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("Dungeon generation complete"));
 }
 
-void ADungeonGenerator::SelectNextRoom(ERoomType RoomType) const
+void ADungeonGenerator::SelectNextRoom() 
 {
+	const ERoomType NextRoomType = Config->SelectNextRoomType();
 	TSubclassOf<ARoom> RoomSpawnClass;
 	
-	switch (RoomType)
+	switch (NextRoomType)
 	{
 		case ERoomType::Normal:
-			// Spawn normal room
 			RoomSpawnClass = Config->NormalRoomClasses[FMath::RandRange(0, Config->NormalRoomClasses.Num() - 1)].LoadSynchronous();
 			SpawnRoom(RoomSpawnClass);
 			break;
+		
 		case ERoomType::Puzzle:
-			// Spawn puzzle room
+			RoomSpawnClass = Config->PuzzleRoomClasses[FMath::RandRange(0, Config->PuzzleRoomClasses.Num() - 1)].LoadSynchronous();
+			SpawnRoom(RoomSpawnClass);
 			break;
+		
 		case ERoomType::Corridor:
-			// Spawn corridor
+			RoomSpawnClass = Config->CorridorClasses[FMath::RandRange(0, Config->CorridorClasses.Num() - 1)].LoadSynchronous();
+			SpawnRoom(RoomSpawnClass);
 			break;
+		
 		case ERoomType::Hazardous:
-			// Spawn hazardous room
+			// TODO: Fix this later when hazardous rooms are going to be added into the game.
+			RoomSpawnClass = Config->HazardousRoomClasses[FMath::RandRange(0, Config->HazardousRoomClasses.Num() - 1)].LoadSynchronous();
+			SpawnRoom(RoomSpawnClass);
 			break;
+		
 		default:
 			UE_LOG(LogTemp, Warning, TEXT("Unknown room type"));
 			break;
 	}
 }
 
-void ADungeonGenerator::SpawnRoom(TSubclassOf<ARoom> RoomClass) const
+void ADungeonGenerator::SpawnRoom(TSubclassOf<ARoom> RoomClass) 
 {
+	if (RoomClass == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid room class"));
+		return;
+	}
 	
+	ARoom* RoomSpawned = Cast<ARoom>(GetWorld()->SpawnActor(RoomClass));
+	if (RoomSpawned == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to spawn room"));
+		return;
+	}
+	
+	UArrowComponent* ChosenArrow = GetARandomSpawnPoint();
+	FTransform SpawnTransform = ChosenArrow->GetComponentTransform();
+	
+	RoomSpawned->SetActorLocationAndRotation(SpawnTransform.GetLocation(), SpawnTransform.GetRotation().Rotator());
+
+	UE_LOG(LogTemp, Warning, TEXT("Spawned room of type %s"), *RoomClass->GetName());
+	if (RoomSpawned->IsRoomColliding())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Room collision detected, destroying room"));	
+		RoomSpawned->Destroy();
+		RoomsSpawned--;
+		return;
+	}
+	
+	for (UArrowComponent* Arrow : RoomSpawned->GetAllSocketArrows_ServerOnly())
+	{
+		AvailableSpawnPoints.Add(Arrow);
+	}
+
+	AvailableSpawnPoints.Remove(ChosenArrow);
+	SpawnedRooms.Add(RoomSpawned);
 }

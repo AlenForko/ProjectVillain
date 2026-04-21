@@ -34,9 +34,13 @@ public:
 	bool IsRoomColliding() const;
 	
 	ERoomType GetRoomType() const { return RoomType; };
+	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> Mesh;
 	
 	UPROPERTY(EditDefaultsOnly)
 	UBoxComponent* Collision;

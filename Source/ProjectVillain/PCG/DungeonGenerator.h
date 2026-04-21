@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "DungeonGenerator.generated.h"
 
+class UArrowComponent;
 enum class ERoomType : uint8;
 class UDungeonGeneratorConfig;
 class ARoom;
@@ -20,12 +21,19 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	int AmountOfRoomsToSpawn = 0;
+	int RoomsSpawned = 0;
+	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnDungeon();
 	
-	void SelectNextRoom(ERoomType RoomType) const;
+	void SelectNextRoom();
+
+	void SpawnRoom(TSubclassOf<ARoom> RoomClass);
 	
-	void SpawnRoom(TSubclassOf<ARoom> RoomClass) const;
+	TArray<UArrowComponent*> AvailableSpawnPoints;
+	
+	UArrowComponent* GetARandomSpawnPoint() { return AvailableSpawnPoints[FMath::RandRange(0, AvailableSpawnPoints.Num() - 1)]; }
 	
 	UPROPERTY(EditDefaultsOnly)
 	UDungeonGeneratorConfig* Config;

@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Rooms")
 	TArray<TSoftClassPtr<ARoom>> CorridorClasses;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Rooms")
+	TArray<TSoftClassPtr<ARoom>> HazardousRoomClasses;
+	
 	UPROPERTY(EditAnywhere, meta=(ClampMin=0), Category = "Generation Config")
 	int32 MinRooms = 5;
 	
@@ -36,14 +39,31 @@ public:
 	int32 MaxRooms = 10;
 	
 	UPROPERTY(EditAnywhere, meta=(ClampMin=0), Category = "Generation Config")
-	int32 MinCorridors = 5;
+	int32 MinPuzzleRooms = 5;
 	
 	UPROPERTY(EditAnywhere, meta=(ClampMin=0), Category = "Generation Config")
-	int32 MaxCorridors = 10;
-	
-	UPROPERTY(EditAnywhere, Category = "Generation Config")
-	FVector GenerationBounds = FVector(1000.0f, 1000.0f, 100.0f);
+	int32 MaxPuzzleRooms = 10;
 	
 	UPROPERTY(EditAnywhere, Category = "Generation Config")
 	int32 Seed = 12345;
+	
+	ERoomType SelectNextRoomType() const;
+	
+private:
+	UPROPERTY(EditAnywhere, Category = "Generation Config")
+	FVector GenerationBounds = FVector(1000.0f, 1000.0f, 100.0f);
+
+	UPROPERTY(EditAnywhere, Category = "SpawnChances")
+	float NormalRoomSpawnWeight;
+	
+	UPROPERTY(EditAnywhere, Category = "SpawnChances")
+	float CorridorRoomSpawnWeight;
+	
+	UPROPERTY(EditAnywhere, Category = "SpawnChances")
+	float HazardousRoomSpawnWeight;
+	
+	UPROPERTY(EditAnywhere, Category = "SpawnChances")
+	float PuzzleRoomSpawnWeight;
+	
+	static void CheckRoomDistance(ERoomType RoomType);
 };
