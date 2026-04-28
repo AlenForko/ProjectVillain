@@ -1,3 +1,10 @@
+/*
+ * Spawn middle room, then bounding box around the middle room.
+ * Create grid as big as the bounding box, spawn puzzle rooms with X minimum distance between each other and main room.
+ * Spawn X amount of hazardous rooms AROUND the puzzle rooms, then spawn normal rooms in the remaining spaces until the desired amount of rooms is reached
+ * Connect each room randomly with corridors but randomly choose which rooms should be connected to eachother. Not every room needs to be connected more than once.
+ */
+
 #include "DungeonGenerator.h"
 
 #include "DungeonGeneratorConfig.h"

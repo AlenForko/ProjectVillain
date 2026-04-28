@@ -49,9 +49,9 @@ public:
 	
 	ERoomType SelectNextRoomType() const;
 	
-private:
 	UPROPERTY(EditAnywhere, Category = "Generation Config")
 	FVector GenerationBounds = FVector(1000.0f, 1000.0f, 100.0f);
+private:
 
 	UPROPERTY(EditAnywhere, Category = "SpawnChances")
 	float NormalRoomSpawnWeight;

@@ -33,10 +33,10 @@ TArray<UArrowComponent*> ARoom::GetAllSocketArrows_ServerOnly() const
 	return Result;
 }
 
-bool ARoom::IsRoomColliding() const
+bool ARoom::IsRoomColliding() 
 {
 	TArray<AActor*> OverlappingActors;
-	Collision->GetOverlappingActors(OverlappingActors);
-	OverlappingActors.Remove(const_cast<ARoom*>(this));
+	Collision->GetOverlappingActors(OverlappingActors, ARoom::StaticClass());
+	OverlappingActors.Remove(this);
 	return OverlappingActors.Num() > 0;
 }

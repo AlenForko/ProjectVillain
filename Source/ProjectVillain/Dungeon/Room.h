@@ -31,7 +31,7 @@ public:
 	TArray<UArrowComponent*> GetAllSocketArrows_ServerOnly() const;
 
 	UFUNCTION(BlueprintCallable)
-	bool IsRoomColliding() const;
+	bool IsRoomColliding();
 	
 	ERoomType GetRoomType() const { return RoomType; };
 	

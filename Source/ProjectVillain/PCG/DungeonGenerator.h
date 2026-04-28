@@ -40,4 +40,10 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TArray<ARoom*> SpawnedRooms;
+
+	// Helper function declarations
+	FVector GetCenterOfBoundingBox(const FVector& Bounds);
+	FVector GetRandomPositionInBounds(const FVector& Bounds);
+	bool IsPositionValid(const FVector& Position, float MinDistance, const TArray<ARoom*>& ExistingRooms);
+	ARoom* SpawnRoomAtPosition(TSubclassOf<ARoom> RoomClass, const FVector& Position);
 };
