@@ -25,12 +25,13 @@ class PROJECTVILLAIN_API AProjectVillainPlayerState : public APlayerState
 public:
 	AProjectVillainPlayerState();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	void SetPlayerRole(EPlayerRole NewRole);
 	
 	EPlayerRole GetPlayerRole() const { return PlayerRole; }
-protected:
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
+protected:
 	UPROPERTY(ReplicatedUsing=OnRep_PlayerRole, BlueprintReadOnly, Category="Player State")
 	EPlayerRole PlayerRole = EPlayerRole::Survivor;
 	

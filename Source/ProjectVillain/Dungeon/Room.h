@@ -27,8 +27,8 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION(BlueprintCallable, Category="Room|Sockets")
-	TArray<UArrowComponent*> GetAllSocketArrows_ServerOnly() const;
+	UFUNCTION()
+	TArray<UArrowComponent*> GetAllSocketArrows() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsRoomColliding();

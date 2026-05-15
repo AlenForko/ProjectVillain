@@ -30,11 +30,10 @@ public:
 	
 	bool IsCrouching() const { return bIsCrouching; }
 
-protected:
 	virtual void BeginPlay() override;
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+protected:
 	UFUNCTION()
 	void OnRep_MovementStateChanged();
 	

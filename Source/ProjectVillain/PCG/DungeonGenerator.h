@@ -31,19 +31,18 @@ private:
 
 	void SpawnRoom(TSubclassOf<ARoom> RoomClass);
 	
-	TArray<UArrowComponent*> AvailableSpawnPoints;
 	
-	UArrowComponent* GetARandomSpawnPoint() { return AvailableSpawnPoints[FMath::RandRange(0, AvailableSpawnPoints.Num() - 1)]; }
+	UArrowComponent* GetARandomSpawnPoint()
+	{
+		return AvailableSpawnPoints[FMath::RandRange(0, AvailableSpawnPoints.Num() - 1)];
+	}
+	
+	UPROPERTY(VisibleAnywhere)
+	TArray<UArrowComponent*> AvailableSpawnPoints;
 	
 	UPROPERTY(EditDefaultsOnly)
 	UDungeonGeneratorConfig* Config;
 	
 	UPROPERTY(VisibleAnywhere)
 	TArray<ARoom*> SpawnedRooms;
-
-	// Helper function declarations
-	FVector GetCenterOfBoundingBox(const FVector& Bounds);
-	FVector GetRandomPositionInBounds(const FVector& Bounds);
-	bool IsPositionValid(const FVector& Position, float MinDistance, const TArray<ARoom*>& ExistingRooms);
-	ARoom* SpawnRoomAtPosition(TSubclassOf<ARoom> RoomClass, const FVector& Position);
 };

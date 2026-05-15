@@ -23,7 +23,7 @@ void ARoom::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-TArray<UArrowComponent*> ARoom::GetAllSocketArrows_ServerOnly() const
+TArray<UArrowComponent*> ARoom::GetAllSocketArrows() const
 {
 	if (!HasAuthority())
 		return {};

@@ -1,6 +1,4 @@
-
 #include "VillainCharacter.h"
-
 #include "GameFramework/CharacterMovementComponent.h"
 
 AVillainCharacter::AVillainCharacter()

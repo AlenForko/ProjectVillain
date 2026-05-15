@@ -17,10 +17,12 @@ public:
 	AProjectVillainGameMode();
 	
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
-	virtual void BeginPlay() override;
 	
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APawn> SurvivorPawnClass;
 

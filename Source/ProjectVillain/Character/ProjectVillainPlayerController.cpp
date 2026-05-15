@@ -26,22 +26,40 @@ void AProjectVillainPlayerController::BeginPlay()
 void AProjectVillainPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	CachePossessedCharacter();
+	CachePossessedCharacter(InPawn);
 }
 
-void AProjectVillainPlayerController::CachePossessedCharacter()
+void AProjectVillainPlayerController::AcknowledgePossession(APawn* P)
 {
-	
-	// TODO: FIX THIS SHIT........... CachedBaseCharacter doesn't get cached on s tart, so the input doesn't work.
-	CachedBaseCharacter = Cast<ACharacterBase>(GetPawn());
-	if (CachedBaseCharacter)
+	Super::AcknowledgePossession(P);
+	CachePossessedCharacter(P);
+}
+
+void AProjectVillainPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
+	CachedBaseCharacter = nullptr;
+}
+
+void AProjectVillainPlayerController::CachePossessedCharacter(APawn* InPawn)
+{
+	APawn* PossessedPawn = InPawn;
+	if (!PossessedPawn)
 	{
-		UE_LOG(LogTemp, Log, TEXT("CachedBaseCharacter assigned: %s"), *CachedBaseCharacter->GetName());
+		PossessedPawn = GetPawn();
 	}
-	else
+
+	CachedBaseCharacter = Cast<ACharacterBase>(PossessedPawn);
+}
+
+ACharacterBase* AProjectVillainPlayerController::GetControlledCharacter()
+{
+	if (!CachedBaseCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CachedBaseCharacter NOT assigned (GetPawn returned null or not ACharacterBase)"));
+		CachePossessedCharacter();
 	}
+
+	return CachedBaseCharacter.Get();
 }
 
 void AProjectVillainPlayerController::SetupInputComponent()
@@ -76,37 +94,57 @@ void AProjectVillainPlayerController::SetupInputComponent()
 void AProjectVillainPlayerController::Input_Move(const FInputActionValue& Value)
 {
 	const FVector2D MoveAxis = Value.Get<FVector2D>();
-	CachedBaseCharacter->HandleMoveInput(MoveAxis);
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->HandleMoveInput(MoveAxis);
+	}
 }
 
 void AProjectVillainPlayerController::Input_Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxis = Value.Get<FVector2D>();
-	CachedBaseCharacter->HandleLookInput(LookAxis);
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->HandleLookInput(LookAxis);
+	}
 }
 
 void AProjectVillainPlayerController::Input_JumpStarted(const FInputActionValue& /*Value*/)
 {
-	CachedBaseCharacter->HandleJumpPressed();
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->HandleJumpPressed();
+	}
 }
 
 void AProjectVillainPlayerController::Input_JumpCompleted(const FInputActionValue& /*Value*/)
 {
-	CachedBaseCharacter->HandleJumpReleased();
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->HandleJumpReleased();
+	}
 }
 
 void AProjectVillainPlayerController::Input_SprintStarted(const FInputActionValue& /*Value*/)
 {
-	CachedBaseCharacter->StartSprint();
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->StartSprint();
+	}
 }
 
 void AProjectVillainPlayerController::Input_SprintCompleted(const FInputActionValue& /*Value*/)
 {
-	CachedBaseCharacter->StopSprint();
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->StopSprint();
+	}
 }
 
 void AProjectVillainPlayerController::Input_CrouchToggle(const FInputActionValue& /*Value*/)
 {
-
-	CachedBaseCharacter->ToggleCrouch();
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->ToggleCrouch();
+	}
 }

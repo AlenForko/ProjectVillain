@@ -4,10 +4,6 @@
 #include "CharacterBase.h"
 #include "SurvivorCharacter.generated.h"
 
-class UInputMappingContext;
-class UInputAction;
-struct FInputActionValue;
-
 UCLASS()
 class PROJECTVILLAIN_API ASurvivorCharacter : public ACharacterBase
 {
@@ -15,5 +11,4 @@ class PROJECTVILLAIN_API ASurvivorCharacter : public ACharacterBase
 
 public:
 	ASurvivorCharacter();
-	
 };

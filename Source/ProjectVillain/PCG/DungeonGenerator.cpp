@@ -30,7 +30,7 @@ void ADungeonGenerator::BeginPlay()
 void ADungeonGenerator::Server_SpawnDungeon_Implementation()
 {
 	ARoom* MainRoom = Cast<ARoom>(GetWorld()->SpawnActor(Config->MainRoomClass.LoadSynchronous(), &FTransform::Identity));
-	for (UArrowComponent* Arrow : MainRoom->GetAllSocketArrows_ServerOnly())
+	for (UArrowComponent* Arrow : MainRoom->GetAllSocketArrows())
 	{
 		AvailableSpawnPoints.Add(Arrow);
 	}
@@ -78,7 +78,6 @@ void ADungeonGenerator::SelectNextRoom()
 			break;
 		
 		case ERoomType::Hazardous:
-			// TODO: Fix this later when hazardous rooms are going to be added into the game.
 			RoomSpawnClass = Config->HazardousRoomClasses[FMath::RandRange(0, Config->HazardousRoomClasses.Num() - 1)].LoadSynchronous();
 			SpawnRoom(RoomSpawnClass);
 			break;
@@ -118,7 +117,7 @@ void ADungeonGenerator::SpawnRoom(TSubclassOf<ARoom> RoomClass)
 		return;
 	}
 	
-	for (UArrowComponent* Arrow : RoomSpawned->GetAllSocketArrows_ServerOnly())
+	for (UArrowComponent* Arrow : RoomSpawned->GetAllSocketArrows())
 	{
 		AvailableSpawnPoints.Add(Arrow);
 	}

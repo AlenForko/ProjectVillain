@@ -28,10 +28,12 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void ACharacterBase::ApplyMovementSpeed() const
 {
-	if (!GetCharacterMovement()) return;
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (!MovementComponent) return;
 
 	float TargetSpeed = bIsCrouching ? CrouchSpeed : (bIsSprinting ? SprintSpeed : WalkSpeed);
-	GetCharacterMovement()->MaxWalkSpeed = TargetSpeed;
+	MovementComponent->MaxWalkSpeed = TargetSpeed;
+	MovementComponent->MaxWalkSpeedCrouched = CrouchSpeed;
 }
 
 void ACharacterBase::OnRep_MovementStateChanged()
@@ -69,18 +71,12 @@ void ACharacterBase::HandleJumpReleased()
 
 void ACharacterBase::StartSprint()
 {
-	if (!bIsSprinting)
-	{
-		ServerSetSprinting(true);
-	}
+	ServerSetSprinting(true);
 }
 
 void ACharacterBase::StopSprint()
 {
-	if (bIsSprinting)
-	{
-		ServerSetSprinting(false);
-	}
+	ServerSetSprinting(false);
 }
 
 void ACharacterBase::ToggleCrouch()

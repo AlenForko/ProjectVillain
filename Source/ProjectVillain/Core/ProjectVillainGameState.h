@@ -23,9 +23,9 @@ public:
 	
 	float GetTimeRemaining() const { return TimeRemaining; }
 	
-protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
+protected:
 	UPROPERTY(ReplicatedUsing=OnRep_TimeRemaining, BlueprintReadOnly)
 	float TimeRemaining = 600.f;
 	
