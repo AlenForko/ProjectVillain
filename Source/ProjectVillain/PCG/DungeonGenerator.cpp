@@ -9,7 +9,7 @@
 
 #include "DungeonGeneratorConfig.h"
 #include "Components/ArrowComponent.h"
-#include "ProjectVillain/Dungeon/Room.h"
+#include "ProjectVillain/Rooms/Room.h"
 
 ADungeonGenerator::ADungeonGenerator()
 {

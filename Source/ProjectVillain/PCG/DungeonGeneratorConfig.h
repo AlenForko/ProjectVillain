@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "ProjectVillain/Dungeon/Room.h"
+#include "ProjectVillain/Rooms/Room.h"
 #include "DungeonGeneratorConfig.generated.h"
 
 /**

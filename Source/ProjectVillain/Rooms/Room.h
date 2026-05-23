@@ -26,7 +26,7 @@ public:
 	ARoom();
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	
 	UFUNCTION()
 	TArray<UArrowComponent*> GetAllSocketArrows() const;
 
