@@ -14,6 +14,7 @@ void AProjectVillainGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
+	DOREPLIFETIME(AProjectVillainGameState, MatchPhase);
 	DOREPLIFETIME(AProjectVillainGameState, TimeRemaining);
 }
 
@@ -25,6 +26,17 @@ void AProjectVillainGameState::StartMatchTimer()
 	}
 }
 
+void AProjectVillainGameState::SetMatchPhase(EMatchPhase NewMatchPhase)
+{
+	if (!HasAuthority() || MatchPhase == NewMatchPhase)
+	{
+		return;
+	}
+
+	MatchPhase = NewMatchPhase;
+	OnRep_MatchPhase();
+}
+
 void AProjectVillainGameState::DecreaseTimer()
 {
 	if (!HasAuthority()) return;
@@ -34,9 +46,15 @@ void AProjectVillainGameState::DecreaseTimer()
 	{
 		TimeRemaining = 0.0f;
 		GetWorld()->GetTimerManager().ClearTimer(MatchTimerHandle);
+		SetMatchPhase(EMatchPhase::Ended);
 		
 		//TODO: TRIGGER VILLAIN WIN
 	}
+}
+
+void AProjectVillainGameState::OnRep_MatchPhase()
+{
+	// Hook for phase-driven UI and gameplay reactions.
 }
 
 void AProjectVillainGameState::OnRep_TimeRemaining()

@@ -17,7 +17,7 @@ enum class ERoomType : uint8
 };
 
 class UBoxComponent;
-UCLASS()
+UCLASS(Abstract)
 class PROJECTVILLAIN_API ARoom : public AActor
 {
 	GENERATED_BODY()

@@ -32,6 +32,7 @@ void AProjectVillainGameMode::BeginPlay()
 	
 	if (AProjectVillainGameState* PVGameState = GetGameState<AProjectVillainGameState>())
 	{
+		PVGameState->SetMatchPhase(EMatchPhase::Playing);
 		PVGameState->StartMatchTimer();
 	}
 }
