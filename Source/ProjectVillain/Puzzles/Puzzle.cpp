@@ -85,6 +85,11 @@ bool APuzzle::CanPlayerUsePuzzle(APlayerController* Player) const
 	return Distance <= InteractionDistance;
 }
 
+void APuzzle::OnPuzzleFail() const
+{
+	// Maybe update UI
+}
+
 bool APuzzle::TrySetPuzzleStage(EPuzzleStage NewStage, APlayerController* Player)
 {
 	if (!CanPlayerUsePuzzle(Player) || NewStage == EPuzzleStage::Inactive)

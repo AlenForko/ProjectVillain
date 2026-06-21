@@ -61,5 +61,6 @@ protected:
 
 	virtual bool CanPlayerUsePuzzle(APlayerController* Player) const;
 
+	virtual void OnPuzzleFail() const;
 	bool TrySetPuzzleStage(EPuzzleStage NewStage, APlayerController* Player);
 };
