@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> IA_CrouchToggle;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> IA_Interact;
+	
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<AProjectVillainHUD> MainHUD;
 
@@ -56,7 +59,8 @@ private:
 	void Input_SprintStarted(const FInputActionValue& Value);
 	void Input_SprintCompleted(const FInputActionValue& Value);
 	void Input_CrouchToggle(const FInputActionValue& Value);
-
+	void Input_Interact(const FInputActionValue& Value);
+	
 	void CachePossessedCharacter(APawn* InPawn = nullptr);
 	ACharacterBase* GetControlledCharacter();
 };

@@ -1,6 +1,7 @@
 #include "CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectVillain/Components/InteractionComponent.h"
 
 ACharacterBase::ACharacterBase()
 {
@@ -11,6 +12,8 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
 }
 
 void ACharacterBase::BeginPlay()
@@ -110,4 +113,10 @@ void ACharacterBase::ServerSetCrouching_Implementation(bool bNewCrouching)
 	}
 
 	ApplyMovementSpeed();
+}
+
+void ACharacterBase::HandleInteract()
+{
+	if (InteractionComponent)
+		InteractionComponent->TryInteract();
 }

@@ -89,6 +89,9 @@ void AProjectVillainPlayerController::SetupInputComponent()
 
 	if (IA_CrouchToggle)
 		EnhancedInputComp->BindAction(IA_CrouchToggle, ETriggerEvent::Started, this, &AProjectVillainPlayerController::Input_CrouchToggle);
+
+	if (IA_Interact)
+		EnhancedInputComp->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &AProjectVillainPlayerController::Input_Interact);
 }
 
 void AProjectVillainPlayerController::Input_Move(const FInputActionValue& Value)
@@ -146,5 +149,13 @@ void AProjectVillainPlayerController::Input_CrouchToggle(const FInputActionValue
 	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
 	{
 		ControlledCharacter->ToggleCrouch();
+	}
+}
+
+void AProjectVillainPlayerController::Input_Interact(const FInputActionValue& Value)
+{
+	if (ACharacterBase* ControlledCharacter = GetControlledCharacter())
+	{
+		ControlledCharacter->HandleInteract();
 	}
 }

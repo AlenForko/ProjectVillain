@@ -4,6 +4,8 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
+class UInteractionComponent;
+
 UCLASS()
 class PROJECTVILLAIN_API ACharacterBase : public ACharacter
 {
@@ -30,9 +32,12 @@ public:
 	
 	bool IsCrouching() const { return bIsCrouching; }
 
+	void HandleInteract();
+	
 	virtual void BeginPlay() override;
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	UFUNCTION()
 	void OnRep_MovementStateChanged();
@@ -59,4 +64,7 @@ protected:
 	
 	UPROPERTY(ReplicatedUsing=OnRep_MovementStateChanged, BlueprintReadOnly, Category="Movement")
 	bool bIsCrouching = false;
+	
+	UPROPERTY(VisibleAnywhere, Category="Components")
+	TObjectPtr<UInteractionComponent> InteractionComponent;
 };
